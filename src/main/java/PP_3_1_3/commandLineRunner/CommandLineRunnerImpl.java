@@ -6,8 +6,9 @@ import PP_3_1_3.repositories.RoleRepository;
 import PP_3_1_3.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Set;
 
 public class CommandLineRunnerImpl implements CommandLineRunner {
     private final RoleRepository roleRepository;
@@ -39,7 +40,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         adminUser.setLastName("Admin");
         adminUser.setAge(37);
         adminUser.setEmail("admin@admin.ru");
-        adminUser.setRoles(List.of(roleRepository.getById(1), roleRepository.getById(2)));
+        adminUser.setRoles(Set.of(roleRepository.findById(1).get(), roleRepository.findById(2).get()));
         userRepository.save(adminUser);
 
         User userUser = new User();
@@ -49,7 +50,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         userUser.setLastName("User");
         userUser.setAge(18);
         userUser.setEmail("user@user.ru");
-        userUser.setRoles(List.of(roleRepository.getById(2)));
+        userUser.setRoles(Set.of(roleRepository.findById(2).get()));
         userRepository.save(userUser);
     }
 }

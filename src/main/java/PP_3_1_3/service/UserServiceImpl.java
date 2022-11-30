@@ -27,13 +27,11 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    @Transactional
     @Override
     public User getUserById(int id) {
         Optional<User> foundUser = userRepository.findById(id);
@@ -43,9 +41,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void saveUser(User user) {
-        if (userRepository.findById(user.getId()).isPresent()) {
-            throw new UsernameNotFoundException("Пользователь с таким именем уже существует");
-        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -53,9 +48,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateUser(int id, User updatedUser) {
-        if (userRepository.findById(updatedUser.getId()).isPresent()) {
-            throw new UsernameNotFoundException("Пользователь с таким именем уже существует");
-        }
         updatedUser.setId(id);
         userRepository.save(updatedUser);
     }
@@ -71,13 +63,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUserByUsername(username);
     }
 
-    @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isEmpty()) {
-            throw new UsernameNotFoundException("Пользователь не найден");
+        User user = userRepository.findByUsername(username).get();
+        if (user == null) {
+            throw new UsernameNotFoundException("Username не найден");
         }
-        return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(), user.get().getRoles());
+        return user;
     }
 }
